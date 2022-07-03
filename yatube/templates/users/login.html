@@ -1,0 +1,16 @@
+{% extends "user_password_forms.html" %}
+
+{% block title %}<title>Войти</title>{% endblock %}
+
+{% block name %}
+  Войти на сайт 
+{% endblock %}
+
+{% block button %}
+  <button type="submit" class="btn btn-primary">  
+    Войти 
+  </button> 
+  <a href="{% url 'users:password_reset' %}" class="btn btn-link">  
+    Забыли пароль?  
+  </a>  
+{% endblock %}
