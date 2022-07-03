@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
