@@ -10,7 +10,8 @@ from django.conf import settings
 from django import forms
 
 from ..models import Group, Post, Comment, Follow
-from .utils import post_body_test, view_bundle, reverse_ad, uploaded_img, get_follow_model
+from .utils import (post_body_test, view_bundle, reverse_ad, uploaded_img,
+                    get_follow_model)
 
 
 User = get_user_model()
@@ -191,17 +192,19 @@ class SubscribeViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user_author = User.objects.create(username='Ползьователь на которого подписались')
-        cls.user_follower = User.objects.create(username='Пользователь который подписался')
-        cls.user_no_follow = User.objects.create(username='Пользователь не подписан ни на кого')
+        cls.user_author = User.objects.create(username='Автор')
+        cls.user_follower = User.objects.create(username='Подписчик')
+        cls.user_no_follow = User.objects.create(username='Не подпичсик')
         cls.post = Post.objects.create(
             author=cls.user_author,
-            text='Тестовый пост',
+            text='Тестовый пост автора',
+        )
+        cls.post_no_follow = Post.objects.create(
+            author=cls.user_no_follow,
+            text='Тестовый пост пользователя на которого нет подписок',
         )
 
     def setUp(self):
-        self.auth_author = Client()
-        self.auth_author.force_login(self.user_author)
         self.auth_follower = Client()
         self.auth_follower.force_login(self.user_follower)
         self.auth_no_follow = Client()
@@ -209,11 +212,26 @@ class SubscribeViewsTest(TestCase):
 
     def test_user_can_subscribe_and_unsubscribe(self):
         '''Пользователь может подписаться и отписаться от автора.'''
-        self.assertFalse(get_follow_model(self))
-        self.auth_follower.get(reverse('posts:profile_follow', kwargs={'username': self.user_author.username}))
+        self.auth_follower.get(
+            reverse('posts:profile_follow',
+                    kwargs={'username': self.user_author.username})
+        )
         self.assertTrue(get_follow_model(self))
-        self.auth_follower.get(reverse('posts:profile_unfollow', kwargs={'username': self.user_author.username}))
+        self.auth_follower.get(
+            reverse('posts:profile_unfollow',
+                    kwargs={'username': self.user_author.username})
+        )
         self.assertFalse(get_follow_model(self))
 
     def test_user_sees_who_follows(self):
-        '''Пользователь видит посты тех, на кого подписан и не видит тех, накого не подписан'''
+        '''Новый пост видят те кто подписаны, и не видят кто не подписан.'''
+        Follow.objects.create(user=self.user_follower, author=self.user_author)
+        response_follower = self.auth_follower.get(
+            reverse('posts:follow_index')
+        )
+        response_no_follow_user = self.auth_no_follow.get(
+            reverse('posts:follow_index')
+        )
+        self.assertEqual(response_follower.context['page_obj'][0].text,
+                         self.post.text)
+        self.assertFalse(response_no_follow_user.context['page_obj'])
