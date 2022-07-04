@@ -1,6 +1,8 @@
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from ..models import Follow
+
 
 def post_body_test(self, bundle):
     for first, second in bundle:
@@ -40,3 +42,8 @@ uploaded_img = SimpleUploadedFile(
     content=small_gif,
     content_type='image/gif'
 )
+
+
+def get_follow_model(self):
+    return Follow.objects.filter(user=self.user_follower,
+                                 author=self.user_author)

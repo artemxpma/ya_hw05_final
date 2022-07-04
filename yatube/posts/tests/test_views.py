@@ -9,8 +9,8 @@ from django.urls import reverse
 from django.conf import settings
 from django import forms
 
-from ..models import Group, Post, Comment
-from .utils import post_body_test, view_bundle, reverse_ad, uploaded_img
+from ..models import Group, Post, Comment, Follow
+from .utils import post_body_test, view_bundle, reverse_ad, uploaded_img, get_follow_model
 
 
 User = get_user_model()
@@ -185,3 +185,35 @@ class PaginatorViewsTest(TestCase):
         response = self.authorized_client.get(reverse(
             'posts:index') + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 3)
+
+
+class SubscribeViewsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user_author = User.objects.create(username='Ползьователь на которого подписались')
+        cls.user_follower = User.objects.create(username='Пользователь который подписался')
+        cls.user_no_follow = User.objects.create(username='Пользователь не подписан ни на кого')
+        cls.post = Post.objects.create(
+            author=cls.user_author,
+            text='Тестовый пост',
+        )
+
+    def setUp(self):
+        self.auth_author = Client()
+        self.auth_author.force_login(self.user_author)
+        self.auth_follower = Client()
+        self.auth_follower.force_login(self.user_follower)
+        self.auth_no_follow = Client()
+        self.auth_no_follow.force_login(self.user_no_follow)
+
+    def test_user_can_subscribe_and_unsubscribe(self):
+        '''Пользователь может подписаться и отписаться от автора.'''
+        self.assertFalse(get_follow_model(self))
+        self.auth_follower.get(reverse('posts:profile_follow', kwargs={'username': self.user_author.username}))
+        self.assertTrue(get_follow_model(self))
+        self.auth_follower.get(reverse('posts:profile_unfollow', kwargs={'username': self.user_author.username}))
+        self.assertFalse(get_follow_model(self))
+
+    def test_user_sees_who_follows(self):
+        '''Пользователь видит посты тех, на кого подписан и не видит тех, накого не подписан'''
