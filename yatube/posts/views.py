@@ -163,7 +163,7 @@ def follow_index(request):
 @login_required
 def profile_follow(request, username):
     '''
-    Добавит подписку пользователя на автора, путем добавления записи в 
+    Добавит подписку пользователя на автора, путем добавления записи в
     базе данных.
     '''
     author_object = get_object_or_404(User, username=username)
@@ -179,7 +179,7 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     '''
-    Удалит подписку пользователя на автора, путем удаления записи в 
+    Удалит подписку пользователя на автора, путем удаления записи в
     базе данных.
     '''
     author_object = get_object_or_404(User, username=username)
