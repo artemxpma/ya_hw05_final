@@ -144,6 +144,6 @@ class CommentFormTest(TestCase):
         )
         self.assertRedirects(
             response,
-            reverse('users:login') + '?next=/posts/1/comment/'
+            reverse('users:login') + f'?next=/posts/{self.post.id}/comment/'
         )
         self.assertEqual(Comment.objects.count(), comments_count)
