@@ -133,6 +133,10 @@ def post_edit(request, post_id):
 
 @login_required
 def add_comment(request, post_id):
+    '''
+    Добавит комментарий к посту при отправке валидной формы ПОСТ и
+    перенаправит на страницу post_detail.
+    '''
     post_object = get_object_or_404(Post, id=post_id)
     form = CommentForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
@@ -145,6 +149,9 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
+    '''
+    Покажет страницу с записями авторов, на которых подписан пользователь.
+    '''
     post_list = Post.objects.filter(author__following__user=request.user)
     page_obj = paginator(request, post_list)
     context = {
@@ -155,6 +162,10 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
+    '''
+    Добавит подписку пользователя на автора, путем добавления записи в 
+    базе данных.
+    '''
     author_object = get_object_or_404(User, username=username)
     if request.user == author_object \
             or Follow.objects.filter(user=request.user,
@@ -167,6 +178,10 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
+    '''
+    Удалит подписку пользователя на автора, путем удаления записи в 
+    базе данных.
+    '''
     author_object = get_object_or_404(User, username=username)
     unfollow = Follow.objects.filter(user=request.user, author=author_object)
     if unfollow:
