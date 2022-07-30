@@ -31,8 +31,9 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '[::1]',
     'testserver',
+    'artemxpma.pythonanywhere.com',
+    'www.artemxpma.pythonanywhere.com',
 ]
-
 
 # Application definition
 
