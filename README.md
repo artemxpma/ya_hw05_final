@@ -1,6 +1,6 @@
 # Final version of Yatube Project
-Yatube is study pet-project created in order to get familiar with Python, Django, DRF and related technologies.
-It hase functionality of simple, yet quick and effective web-blog with modern security methods and ready to deploy.
+Yatube is study pet-project created in order to get familiar with Python, Django, DRF and related technologies. /n
+It has functionality of simple, yet quick and effective web-blog with modern security methods and ready to deploy.
 This is main part, for API visit [Yatube API](https://github.com/artemxpma/ya_api_final_yatube]).
 You can build a mobile or desktop app using this API or integrate Yatube blog with your web-app.
 
